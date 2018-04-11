@@ -10,14 +10,45 @@ class ChanageForm extends React.Component {
 }
 
 class ExTable extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: this.props.data,
+		}
+	}
 	render() {
 		return (
-			<table></table>
+			<table>
+				<thead>
+					<tr>
+						{this.props.headers.map(function(head, inx){
+							return <th key={inx}>{head}</th>
+						})}
+					</tr>
+				</thead>
+				<tbody>
+					{this.state.data.map(function(row, rowInx){
+						return (
+							<tr key={rowInx}>
+								{row.map(function(cell, cellInx) {
+									return <td key={cellInx}>{cell}</td>
+								})}
+							</tr>
+						)
+					})}
+				</tbody>  
+			</table>
 		)
 	}
 }
 
 class Shelf extends React.Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			data: this.props.initData,
+		}
+	}
 
 	someFunc = (some) => {
 		return null;
@@ -27,13 +58,21 @@ class Shelf extends React.Component {
 		return (
 			<div>
 				<ChanageForm />
-				<ExTable />
+				<ExTable data={this.state.data} headers={this.props.headers} />
 			</div>
 		)
 	}
 }
 
-var headers = [];
-var data = [];
+var headers = ["Название", "Автор", "Год издания"];
+var data = [
+	["The Lord of the Rings", "J. R. R. Tolkien", "1954-1955"], 
+	["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "1943"], 
+	["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "1997"], 
+	["And Then There Were None", "Agatha Christie", "1939"], 
+	["Dream of the Red Chamber", "Cao Xueqin", "1754-1791"], 
+	["The Hobbit", "J. R. R. Tolkien", "1937"], 
+	["She: A History of Adventure", "H. Rider Haggard", "1887"],
+];
 
-ReactDOM.render(<Shelf />, document.getElementById('app'));
+var bookShelf = ReactDOM.render(<Shelf headers={headers} initData={data} />, document.getElementById('app'));
