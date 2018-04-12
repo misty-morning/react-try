@@ -12,18 +12,57 @@ class ChanageForm extends React.Component {
 class ExTable extends React.Component {
 	constructor(props) {
 		super(props);
+		let desceinding = [];
+		for (var i = 0; i < this.props.headers.length; i++) {
+			desceinding[i] = undefined;
+		}
 		this.state = {
 			data: this.props.data,
+			sortCol: null,
+			desceinding: desceinding,
 		}
 	}
+	sort = (e) => {
+		//console.log(e.target);
+		let column = e.target.cellIndex;
+
+		let data = this.state.data.slice();
+
+		let descending = this.state.desceinding.slice();
+
+		if (!descending[column]) descending[column] = false;
+
+		data.sort(function (a, b) {
+			if (descending[column]) {
+				if (a[column] < b[column]) return 1;
+				if (a[column] > b[column]) return -1;
+			} else {
+				if (a[column] > b[column]) return 1;
+				if (a[column] < b[column]) return -1
+			}
+			
+		}); 
+		descending[column] = !descending[column];
+		this.setState({
+			data: data,
+			sortCol: column,
+			desceinding: descending,
+		});
+	}
 	render() {
+		let arrowUp = "\u2191";
+		let arrowDown = "\u2193";
 		return (
 			<table>
-				<thead>
+				<thead onClick={this.sort}>
 					<tr>
 						{this.props.headers.map(function(head, inx){
-							return <th key={inx}>{head}</th>
-						})}
+							let arrow = "";
+							if (this.state.desceinding[inx] !== undefined) {
+								this.state.desceinding[inx] ? arrow = arrowDown : arrow = arrowUp;
+							}
+							return <th key={inx}>{head + arrow}</th>
+						}, this)}
 					</tr>
 				</thead>
 				<tbody>
@@ -31,11 +70,11 @@ class ExTable extends React.Component {
 						return (
 							<tr key={rowInx}>
 								{row.map(function(cell, cellInx) {
-									return <td key={cellInx}>{cell}</td>
+									return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{cell}</td>
 								})}
 							</tr>
 						)
-					})}
+					}, this)}
 				</tbody>  
 			</table>
 		)
@@ -64,15 +103,15 @@ class Shelf extends React.Component {
 	}
 }
 
-var headers = ["Название", "Автор", "Год издания"];
+var headers = ["Номер", "Название", "Автор", "Год издания"];
 var data = [
-	["The Lord of the Rings", "J. R. R. Tolkien", "1954-1955"], 
-	["Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "1943"], 
-	["Harry Potter and the Philosopher's Stone", "J. K. Rowling", "1997"], 
-	["And Then There Were None", "Agatha Christie", "1939"], 
-	["Dream of the Red Chamber", "Cao Xueqin", "1754-1791"], 
-	["The Hobbit", "J. R. R. Tolkien", "1937"], 
-	["She: A History of Adventure", "H. Rider Haggard", "1887"],
+	[1, "The Lord of the Rings", "J. R. R. Tolkien", "1954-1955"], 
+	[2, "Le Petit Prince (The Little Prince)", "Antoine de Saint-Exupéry", "1943"], 
+	[3, "Harry Potter and the Philosopher's Stone", "J. K. Rowling", "1997"], 
+	[4, "And Then There Were None", "Agatha Christie", "1939"], 
+	[5, "Dream of the Red Chamber", "Cao Xueqin", "1754-1791"], 
+	[6, "The Hobbit", "J. R. R. Tolkien", "1937"], 
+	[7, "She: A History of Adventure", "H. Rider Haggard", "1887"],
 ];
 
 var bookShelf = ReactDOM.render(<Shelf headers={headers} initData={data} />, document.getElementById('app'));
