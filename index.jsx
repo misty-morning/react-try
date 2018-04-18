@@ -16,11 +16,15 @@ class ExTable extends React.Component {
 		for (var i = 0; i < this.props.headers.length; i++) {
 			desceinding[i] = undefined;
 		}
+
 		this.state = {
 			data: this.props.data,
 			sortCol: null,
 			desceinding: desceinding,
+			edit: null, 
+			editingRow: [],
 		}
+		//this.props.editingRow = [];
 	}
 	sort = (e) => {
 		//console.log(e.target);
@@ -49,6 +53,38 @@ class ExTable extends React.Component {
 			desceinding: descending,
 		});
 	}
+	del = (e) => {
+		let rowInx = e.target.dataset.row;
+		let data = this.state.data.slice();
+		data.splice(rowInx, 1);
+		this.setState({
+			data: data,
+		})
+
+	}
+	startEdit = (e) => {
+		let rowInx = e.target.dataset.row;
+		//this.props.editingRow = this.state.data[rowInx];
+		this.setState({
+			editingRow: this.state.data[rowInx],
+			edit: rowInx,
+		});
+	}
+	endEdit = (e) => {
+		let data = this.state.data.slice();
+		data[this.state.edit] = this.state.editingRow.slice();
+		this.setState({
+			data: data,
+			edit: null,
+		});
+	}
+	editRowEl = (e) => {
+		
+		let cellInx = e.target.dataset.cell;
+		let row = this.state.editingRow.slice();
+		row[cellInx] = e.target.value;
+		this.setState({editingRow:row});
+	}
 	render() {
 		let arrowUp = "\u2191";
 		let arrowDown = "\u2193";
@@ -63,18 +99,32 @@ class ExTable extends React.Component {
 							}
 							return <th key={inx}>{head + arrow}</th>
 						}, this)}
+						<th>Управление</th>
 					</tr>
 				</thead>
 				<tbody>
 					{this.state.data.map(function(row, rowInx){
+						let editBtn = <button onClick={this.startEdit} data-row={rowInx}>Изменить</button>
+						if (this.state.edit == rowInx) {
+							editBtn = <button onClick={this.endEdit} data-row={rowInx}>OK</button>
+						}
 						return (
 							<tr key={rowInx}>
 								{row.map(function(cell, cellInx) {
-									return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{cell}</td>
-								})}
+									let content = cell;
+									if (this.state.edit == rowInx) {
+										content = <input type='text' defaultValue={cell} data-row={rowInx} data-cell={cellInx} onChange={this.editRowEl} />
+									} 
+									return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{content}</td>;
+								}, this)}
+								<td data-row={rowInx} data-cell={row.length + 1}>
+									{editBtn}					
+									<button onClick={this.del} data-row={rowInx}>Удалить</button>
+								</td>
 							</tr>
 						)
 					}, this)}
+
 				</tbody>  
 			</table>
 		)
