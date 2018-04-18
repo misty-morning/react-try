@@ -70,6 +70,12 @@ class ExTable extends React.Component {
 			edit: rowInx,
 		});
 	}
+	calncelEdit = (e) => {
+		this.setState({
+			edit: null,
+			editingRow: [],
+		})
+	}
 	endEdit = (e) => {
 		let data = this.state.data.slice();
 		data[this.state.edit] = this.state.editingRow.slice();
@@ -79,7 +85,6 @@ class ExTable extends React.Component {
 		});
 	}
 	editRowEl = (e) => {
-		
 		let cellInx = e.target.dataset.cell;
 		let row = this.state.editingRow.slice();
 		row[cellInx] = e.target.value;
@@ -104,9 +109,9 @@ class ExTable extends React.Component {
 				</thead>
 				<tbody>
 					{this.state.data.map(function(row, rowInx){
-						let editBtn = <button onClick={this.startEdit} data-row={rowInx}>Изменить</button>
+						let btns = <span><button onClick={this.startEdit} data-row={rowInx}>Изменить</button><button onClick={this.del} data-row={rowInx}>Удалить</button></span>
 						if (this.state.edit == rowInx) {
-							editBtn = <button onClick={this.endEdit} data-row={rowInx}>OK</button>
+							btns = <span><button onClick={this.endEdit} data-row={rowInx}>OK</button><button onClick={this.calncelEdit} data-row={rowInx}>Отмена</button></span>
 						}
 						return (
 							<tr key={rowInx}>
@@ -118,8 +123,8 @@ class ExTable extends React.Component {
 									return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{content}</td>;
 								}, this)}
 								<td data-row={rowInx} data-cell={row.length + 1}>
-									{editBtn}					
-									<button onClick={this.del} data-row={rowInx}>Удалить</button>
+									{btns}					
+									
 								</td>
 							</tr>
 						)
