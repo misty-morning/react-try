@@ -1,14 +1,3 @@
-class ChanageForm extends React.Component {
-	render() {
-		return (
-			<form>
-				<input type="text" />
-				<input type="submit" value="Добавить"/>
-			</form>
-		)
-	}
-}
-
 class ExTable extends React.Component {
 	constructor(props) {
 		super(props);
@@ -23,6 +12,7 @@ class ExTable extends React.Component {
 			desceinding: desceinding,
 			edit: null, 
 			editingRow: [],
+			book: ["","","",""],
 		}
 		//this.props.editingRow = [];
 	}
@@ -90,48 +80,113 @@ class ExTable extends React.Component {
 		row[cellInx] = e.target.value;
 		this.setState({editingRow:row});
 	}
+	textUpdate = (e) => {
+		let prop = e.target.id;
+		let text = e.target.value;
+		let book = this.state.book.slice();
+		switch(prop) {
+			case "book-name":
+				book[1] = text;
+				break;
+			case "book-author":
+				book[2] = text;
+				break;
+			case "book-year":
+				book[3] = text;
+				break;
+		}
+		this.setState({
+			book: book,
+		})
+	}
+	addBook = (e) => {
+		e.preventDefault();
+		let emptiness = false;
+		let book = this.state.book.slice();
+		console.log(book.length)
+		for (let i = 1; i < book.length; i++) {
+			console.log(i)
+			console.log(book[i])
+			if (!book[i]) {
+				emptiness = true;
+				break;
+			}
+		}
+		console.log(emptiness)
+		if (!emptiness) {
+			let data = this.state.data.slice();
+			book[0] = this.state.data.length + 1;
+			data.push(book);
+			this.setState({
+				data: data,
+				book: ["","","",""],
+			});
+		}
+		
+	}
 	render() {
 		let arrowUp = "\u2191";
 		let arrowDown = "\u2193";
+		// let newEl = this.props.addFunc();
+		// colsole.log(newEl)
 		return (
-			<table>
-				<thead onClick={this.sort}>
-					<tr>
-						{this.props.headers.map(function(head, inx){
-							let arrow = "";
-							if (this.state.desceinding[inx] !== undefined) {
-								this.state.desceinding[inx] ? arrow = arrowDown : arrow = arrowUp;
-							}
-							return <th key={inx}>{head + arrow}</th>
-						}, this)}
-						<th>Управление</th>
-					</tr>
-				</thead>
-				<tbody>
-					{this.state.data.map(function(row, rowInx){
-						let btns = <span><button onClick={this.startEdit} data-row={rowInx}>Изменить</button><button onClick={this.del} data-row={rowInx}>Удалить</button></span>
-						if (this.state.edit == rowInx) {
-							btns = <span><button onClick={this.endEdit} data-row={rowInx}>OK</button><button onClick={this.calncelEdit} data-row={rowInx}>Отмена</button></span>
-						}
-						return (
-							<tr key={rowInx}>
-								{row.map(function(cell, cellInx) {
-									let content = cell;
-									if (this.state.edit == rowInx) {
-										content = <input type='text' defaultValue={cell} data-row={rowInx} data-cell={cellInx} onChange={this.editRowEl} />
-									} 
-									return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{content}</td>;
-								}, this)}
-								<td data-row={rowInx} data-cell={row.length + 1}>
-									{btns}					
-									
-								</td>
-							</tr>
-						)
-					}, this)}
+			<div>
+				<form>
+					<label htmlFor="book-name">Имя</label>
+					<br/>
+					<input id='book-name' onChange={this.textUpdate} type="text" value={this.state.book[1]} />
+					<br/>
+					<label htmlFor="book-author">Автор</label>
+					<br/>
+					<input id='book-author' onChange={this.textUpdate} type="text" value={this.state.book[2]} />
+					<br/>
+					<label htmlFor="book-year">Год издания</label>
+					<br/>
+					<input id='book-year' onChange={this.textUpdate} type="text" value={this.state.book[3]} />
+					<br/>
+					<input type="submit" value="Добавить" onClick={this.addBook} />
+					
+				</form>
 
-				</tbody>  
-			</table>
+				<table>
+					<thead onClick={this.sort}>
+						<tr>
+							{this.props.headers.map(function(head, inx){
+								let arrow = "";
+								if (this.state.desceinding[inx] !== undefined) {
+									this.state.desceinding[inx] ? arrow = arrowDown : arrow = arrowUp;
+								}
+								return <th key={inx}>{head + arrow}</th>
+							}, this)}
+							<th>Управление</th>
+						</tr>
+					</thead>
+					<tbody>
+						{this.state.data.map(function(row, rowInx){
+							let btns = <span><button onClick={this.startEdit} data-row={rowInx}>Изменить</button><button onClick={this.del} data-row={rowInx}>Удалить</button></span>
+							if (this.state.edit == rowInx) {
+								btns = <span><button onClick={this.endEdit} data-row={rowInx}>OK</button><button onClick={this.calncelEdit} data-row={rowInx}>Отмена</button></span>
+							}
+							return (
+								<tr key={rowInx}>
+									{row.map(function(cell, cellInx) {
+										let content = cell;
+										if (this.state.edit == rowInx) {
+											content = <input type='text' defaultValue={cell} data-row={rowInx} data-cell={cellInx} onChange={this.editRowEl} />
+										} 
+										return <td key={cellInx} data-row={rowInx} data-cell={cellInx}>{content}</td>;
+									}, this)}
+									<td data-row={rowInx} data-cell={row.length + 1}>
+										{btns}					
+										
+									</td>
+								</tr>
+							)
+						}, this)}
+
+					</tbody>  
+				</table>
+			</div>
 		)
 	}
 }
@@ -143,15 +198,11 @@ class Shelf extends React.Component {
 			data: this.props.initData,
 		}
 	}
-
-	someFunc = (some) => {
-		return null;
-	}
 	
 	render() {
 		return (
 			<div>
-				<ChanageForm />
+				
 				<ExTable data={this.state.data} headers={this.props.headers} />
 			</div>
 		)
