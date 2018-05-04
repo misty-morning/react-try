@@ -144,8 +144,7 @@ class ExTable extends React.Component {
 					<br/>
 					<input id='book-year' onChange={this.textUpdate} type="text" value={this.state.book[3]} />
 					<br/>
-					<input type="submit" value="Добавить" onClick={this.addBook} />
-					
+					<input type="submit" value="Добавить" onClick={this.addBook} />					
 				</form>
 
 				<table>
@@ -191,24 +190,6 @@ class ExTable extends React.Component {
 	}
 }
 
-class Shelf extends React.Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			data: this.props.initData,
-		}
-	}
-	
-	render() {
-		return (
-			<div>
-				
-				<ExTable data={this.state.data} headers={this.props.headers} />
-			</div>
-		)
-	}
-}
-
 var headers = ["Номер", "Название", "Автор", "Год издания"];
 var data = [
 	[1, "The Lord of the Rings", "J. R. R. Tolkien", "1954-1955"], 
@@ -220,4 +201,4 @@ var data = [
 	[7, "She: A History of Adventure", "H. Rider Haggard", "1887"],
 ];
 
-var bookShelf = ReactDOM.render(<Shelf headers={headers} initData={data} />, document.getElementById('app'));
+var bookShelf = ReactDOM.render(<ExTable data={data} headers={headers} />, document.getElementById('app'));
